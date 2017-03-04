@@ -22,22 +22,19 @@ void Files::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 void Files::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
     extern FileSystem * fs;
+    Archivo * cargado = NULL;
+    cargado = fs->cargarArchivo(archivo->getRuta());
+    bool confirm = false;
 
     if(archivo->getTipo() == "Folder"){
-        QString path = fs->selected->getRuta()+"/"+archivo->getNombre();
-        Archivo * cargado = fs->cargarArchivo(path);
         fs->selected = (Folder*)cargado;
     }else{
-        QString path = fs->selected->getRuta()+"/"+archivo->getNombre();
-        Archivo * cargado = fs->cargarArchivo(path);
         ArchivoTexto * archText = (ArchivoTexto*)cargado;
 
-        bool confirm = false;
+        QString text = QInputDialog::getText(NULL, archText->getNombre(), QGraphicsScene::tr("Contenido:"),
+                                             QLineEdit::Normal, archText->getContenido(), &confirm);
 
-        QString text = QInputDialog::getText(NULL, archText->getNombre(), "Contenido:", QLineEdit::Normal, archText->getContenido(), &confirm);
-
-        if(confirm){
+        if(confirm)
             archText->setContenido(text);
-        }
     }
 }

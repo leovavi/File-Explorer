@@ -46,9 +46,6 @@ Archivo * FileSystem::cargarArchivo(QString ruta, Folder * subRaiz){
         else if(temp->getTipo() == "Folder")
             return cargarArchivo(ruta, (Folder*)temp);
     }
-
-    if(subRaiz == raiz)
-        return NULL;
 }
 
 void FileSystem::eliminarArchivo(QString ruta){
