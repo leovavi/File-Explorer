@@ -4,17 +4,14 @@ FileSystem::FileSystem()
 {
     temp = NULL;
     raiz = new Folder("raiz", "raiz");
-    selected = raiz;
-    posX = 0;
-    posY = 0;
+    actualFolder = raiz;
 }
 
 void FileSystem::agregarArchivo(Folder * destino, QString nombre, int tipo){
     int cant = buscar(destino, nombre, (tipo == 1 ? "ArchivoTexto" : "Folder"));
 
-    if(cant != 0){
+    if(cant != 0)
         nombre = nombre +"("+QString::number(cant)+")";
-    }
 
     QString ruta = destino->getRuta()+"/"+nombre;
 
@@ -33,37 +30,36 @@ Lista * FileSystem::listarArchivos(Folder * origen){
 }
 
 Archivo * FileSystem::cargarArchivo(QString ruta){
-    return cargarArchivo(ruta, raiz);
+    if(ruta == "raiz")
+        return raiz;
+
+    return cargarArchivo(ruta, raiz, 1);
 }
 
-Archivo * FileSystem::cargarArchivo(QString ruta, Folder * subRaiz){
+Archivo * FileSystem::cargarArchivo(QString ruta, Folder * subRaiz, int cont){
     for(int i = 0; i<subRaiz->getCantidadArchivos(); i++){
         temp = subRaiz->obtenerArchivo(i);
 
         if(temp->getRuta() == ruta)
             return temp;
 
-        else if(temp->getTipo() == "Folder")
-            return cargarArchivo(ruta, (Folder*)temp);
+        else if(temp->getTipo() == "Folder"){
+            QStringList split = ruta.split('/');
+            if(split.at(cont) == temp->getNombre())
+                return cargarArchivo(ruta, (Folder*)temp, cont+1);
+        }
     }
+
+    if(subRaiz == raiz)
+        return NULL;
 }
 
 void FileSystem::eliminarArchivo(QString ruta){
-    eliminarArchivo(ruta, raiz);
-}
+    Archivo * temp = cargarArchivo(ruta);
+    Folder * actual = getParent(temp);
 
-void FileSystem::eliminarArchivo(QString ruta, Folder * subRaiz){
-    for(int i = 0; i<subRaiz->getCantidadArchivos(); i++){
-        temp = subRaiz->obtenerArchivo(i);
-
-        if(temp->getRuta() == ruta){
-            subRaiz->eliminarArchivo(temp);
-            return;
-        }
-
-        else if(temp->getTipo() == "Folder")
-            return eliminarArchivo(ruta, (Folder*)temp);
-    }
+    if(temp != NULL)
+        actual->eliminarArchivo(temp);
 }
 
 void FileSystem::copiar(Folder * origen, QString nombre, Folder * destino){
@@ -105,4 +101,27 @@ int FileSystem::buscar(Folder * origen, QString nombre, QString tipo){
             cant++;
     }
     return cant;
+}
+
+Folder *FileSystem::getParent(Archivo *arch){
+    return getParent(arch, raiz, 1);
+}
+
+Folder *FileSystem::getParent(Archivo *arch, Folder *subRaiz, int cont)
+{
+    for(int i = 0; i<subRaiz->getCantidadArchivos(); i++){
+        temp = subRaiz->obtenerArchivo(i);
+
+        if(temp->getTipo() == arch->getTipo() && temp->getNombre() == arch->getNombre() && temp->getRuta() == arch->getRuta())
+            return subRaiz;
+
+        else if(subRaiz->getTipo() == "Folder"){
+            QStringList split = arch->getRuta().split('/');
+            if(split.at(cont) == temp->getNombre())
+                return getParent(arch, (Folder*)temp, cont+1);
+        }
+
+    }
+    if(subRaiz == raiz)
+        return NULL;
 }

@@ -7,20 +7,21 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include "folder.h"
-#include "filesystem.h"
 
 class Files : public QGraphicsItem
 {
 public:
-    Files(Archivo * arch, int posX, int posY);
+    Files(Archivo * arch, int posX, int posY, bool painted);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
+    void updateFile(bool);
 
     QImage * image;
+    QRectF rect;
     Archivo * archivo;
     int posX, posY;
+    bool painted;
 };
 
 #endif // FILES_H

@@ -42,9 +42,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>141</x>
       <y>19</y>
-      <width>560</width>
+      <width>601</width>
       <height>31</height>
      </rect>
     </property>
@@ -66,39 +66,39 @@
    <widget class="QPushButton" name="btnFolder">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>2</y>
-      <width>121</width>
-      <height>31</height>
+      <x>4</x>
+      <y>10</y>
+      <width>61</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Oswald</family>
-      <pointsize>16</pointsize>
+      <pointsize>10</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Crear Folder</string>
+     <string>New Folder</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnArchivo">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>35</y>
-      <width>121</width>
-      <height>31</height>
+      <x>67</x>
+      <y>10</y>
+      <width>70</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Oswald</family>
-      <pointsize>16</pointsize>
+      <pointsize>10</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Crear Text File</string>
+     <string>New Text File</string>
     </property>
    </widget>
    <widget class="QLabel" name="cant">
@@ -120,6 +120,63 @@
      <string>Cantidad: </string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnCopy">
+    <property name="geometry">
+     <rect>
+      <x>4</x>
+      <y>36</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>COPY</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnPaste">
+    <property name="geometry">
+     <rect>
+      <x>72</x>
+      <y>36</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>PASTE</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBack">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>24</y>
+      <width>70</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -130,6 +187,23 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title">
+     <string>Archivo</string>
+    </property>
+    <addaction name="actionCrear_Nuevo_Folder"/>
+    <addaction name="actionCrear_Nuevo_Archivo_de_Texto"/>
+    <addaction name="separator"/>
+    <addaction name="actionEliminar_Archivo"/>
+   </widget>
+   <widget class="QMenu" name="menuEdici_n">
+    <property name="title">
+     <string>Edición</string>
+    </property>
+    <addaction name="actionRenombrar_Archivo"/>
+   </widget>
+   <addaction name="menuArchivo"/>
+   <addaction name="menuEdici_n"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -140,6 +214,26 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionCrear_Nuevo_Folder">
+   <property name="text">
+    <string>Crear Nuevo Folder</string>
+   </property>
+  </action>
+  <action name="actionCrear_Nuevo_Archivo_de_Texto">
+   <property name="text">
+    <string>Crear Nuevo Archivo de Texto</string>
+   </property>
+  </action>
+  <action name="actionEliminar_Archivo">
+   <property name="text">
+    <string>Eliminar Archivo</string>
+   </property>
+  </action>
+  <action name="actionRenombrar_Archivo">
+   <property name="text">
+    <string>Renombrar Archivo</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

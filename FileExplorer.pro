@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     archivotexto.cpp \
     filesystem.cpp \
     lista.cpp \
-    files.cpp
+    files.cpp \
+    input.cpp
 
 HEADERS  += mainwindow.h \
     lista.h \
@@ -27,6 +28,8 @@ HEADERS  += mainwindow.h \
     folder.h \
     archivotexto.h \
     filesystem.h \
-    files.h
+    files.h \
+    input.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    input.ui

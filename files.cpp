@@ -1,6 +1,6 @@
 #include "files.h"
 
-Files::Files(Archivo * arch, int posX, int posY){
+Files::Files(Archivo * arch, int posX, int posY, bool painted){
     archivo = arch;
     QString path = "C:\\Users\\Leovavi\\Documents\\UNITEC\\Recursos\\File Explorer\\";
     path += (arch->getTipo() == "Folder" ? "folder.png" : "texto.png");
@@ -8,33 +8,29 @@ Files::Files(Archivo * arch, int posX, int posY){
     image = new QImage(path);
     this->posX = posX;
     this->posY = posY;
+    this->painted = painted;
 }
 
 QRectF Files::boundingRect() const{
-    return QRectF(posX, posY, 100, 150);
+    return QRectF(posX, posY, 100, 130);
 }
 
 void Files::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    QRectF rect = boundingRect();
-    painter->drawImage(rect, *image, QRectF(0,0,100,150));
-    painter->drawText(QRectF(posX, posY+40, 100, 150), Qt::AlignCenter | Qt::TextWordWrap | Qt::TextDontClip, archivo->getNombre());
+    rect = boundingRect();
+
+    if(painted){
+        QColor color(135, 206, 250);
+        painter->fillRect(rect, color);
+    }
+    else{
+        QColor color(255, 255, 255);
+        painter->fillRect(rect, color);
+    }
+    painter->drawImage(rect, *image, QRectF(0,0,100,130));
+    painter->drawText(QRectF(posX, posY+40, 100, 130), Qt::AlignCenter | Qt::TextWordWrap | Qt::TextDontClip, archivo->getNombre());
 }
 
-void Files::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
-    extern FileSystem * fs;
-    Archivo * cargado = NULL;
-    cargado = fs->cargarArchivo(archivo->getRuta());
-    bool confirm = false;
-
-    if(archivo->getTipo() == "Folder"){
-        fs->selected = (Folder*)cargado;
-    }else{
-        ArchivoTexto * archText = (ArchivoTexto*)cargado;
-
-        QString text = QInputDialog::getText(NULL, archText->getNombre(), QGraphicsScene::tr("Contenido:"),
-                                             QLineEdit::Normal, archText->getContenido(), &confirm);
-
-        if(confirm)
-            archText->setContenido(text);
-    }
+void Files::updateFile(bool painted){
+    this->painted = painted;
+    update();
 }

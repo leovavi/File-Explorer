@@ -60,10 +60,14 @@ void Lista::eliminar(Archivo * arch){
         if(inicio == arch){
             inicio = inicio->getSig();
             longitudLista--;
+            if(longitudLista == 0)
+                fin = NULL;
             return;
         }
         else if(fin == arch){
             fin = fin->getAnt();
+            if(fin != NULL)
+                fin->setSig(NULL);
             longitudLista--;
             return;
         }
@@ -75,6 +79,7 @@ void Lista::eliminar(Archivo * arch){
 
         temp->getAnt()->setSig(temp->getSig());
         temp->getSig()->setAnt(temp->getAnt());
+        longitudLista--;
         delete temp;
     }
 }
