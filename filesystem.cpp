@@ -7,7 +7,7 @@ FileSystem::FileSystem()
     actualFolder = raiz;
 }
 
-void FileSystem::agregarArchivo(Folder * destino, QString nombre, int tipo){
+Archivo * FileSystem::agregarArchivo(Folder * destino, QString nombre, int tipo){
     int cant = buscar(destino, nombre, (tipo == 1 ? "ArchivoTexto" : "Folder"));
 
     if(cant != 0)
@@ -18,10 +18,12 @@ void FileSystem::agregarArchivo(Folder * destino, QString nombre, int tipo){
     if(tipo == 1){
         ArchivoTexto * archivo = new ArchivoTexto(nombre, ruta);
         destino->agregarArchivo(archivo);
+        return archivo;
     }
     else if(tipo == 2){
         Folder * folder = new Folder(nombre, ruta);
         destino->agregarArchivo(folder);
+        return folder;
     }
 }
 
@@ -71,23 +73,45 @@ void FileSystem::copiar(Folder * origen, QString nombre, Folder * destino){
     }
 
     if(temp != NULL){
+        int cant = buscar(destino, nombre, (temp->getTipo() == "Folder" ? "Folder" : "ArchivoTexto"));
+        if(cant != 0)
+            nombre = nombre+"("+QString::number(cant)+")";
         QString ruta = destino->getRuta()+"/"+nombre;
 
         if(temp->getTipo() == "Folder"){
-            Folder * folder = new Folder(nombre, ruta);
-            Folder * conv = (Folder*)temp;
-
-            for(int i = 0; i<conv->getCantidadArchivos(); i++)
-                folder->agregarArchivo(conv->obtenerArchivo(i));
-
+            Folder * folder = copiarFolder((Folder*)temp, nombre, ruta);
             destino->agregarArchivo(folder);
         }
         else{
-            ArchivoTexto * text = new ArchivoTexto(nombre, ruta);
-            text->setContenido(((ArchivoTexto*)temp)->getContenido());
+            ArchivoTexto * text = copiarArchivo((ArchivoTexto*)temp, nombre, ruta);
             destino->agregarArchivo(text);
         }
     }
+}
+
+Folder * FileSystem::copiarFolder(Folder *origen, QString nombre, QString ruta){
+    Folder * nuevo = new Folder(nombre, ruta);
+
+    for(int i = 0; i<origen->getCantidadArchivos(); i++){
+        Archivo * obt = origen->obtenerArchivo(i);
+        nombre = obt->getNombre();
+
+        if(obt->getTipo() == "Folder"){
+            Folder * fcopiado = copiarFolder((Folder*)obt, nombre, ruta+"/"+nombre);
+            nuevo->agregarArchivo(fcopiado);
+        }else{
+            ArchivoTexto * text = copiarArchivo((ArchivoTexto*)obt, obt->getNombre(), ruta+"/"+obt->getNombre());
+            nuevo->agregarArchivo(text);
+        }
+    }
+
+    return nuevo;
+}
+
+ArchivoTexto * FileSystem::copiarArchivo(ArchivoTexto * origen, QString nombre, QString ruta){
+    ArchivoTexto * text = new ArchivoTexto(nombre, ruta);
+    text->setContenido(origen->getContenido());
+    return text;
 }
 
 int FileSystem::buscar(Folder * origen, QString nombre, QString tipo){

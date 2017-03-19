@@ -23,6 +23,12 @@
       <height>441</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <column>
      <property name="text">
       <string notr="true">1</string>
@@ -161,9 +167,9 @@
    <widget class="QPushButton" name="btnBack">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>24</y>
-      <width>70</width>
+      <x>762</x>
+      <y>23</y>
+      <width>31</width>
       <height>21</height>
      </rect>
     </property>
@@ -174,7 +180,34 @@
      </font>
     </property>
     <property name="text">
-     <string>Back</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../../../../../Recursos/File Explorer/back.png</normaloff>../../../../../Recursos/File Explorer/back.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnFront">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>23</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../../../../../Recursos/File Explorer/front.png</normaloff>../../../../../Recursos/File Explorer/front.png</iconset>
     </property>
    </widget>
   </widget>
@@ -188,6 +221,11 @@
     </rect>
    </property>
    <widget class="QMenu" name="menuArchivo">
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+     </font>
+    </property>
     <property name="title">
      <string>Archivo</string>
     </property>
@@ -195,11 +233,20 @@
     <addaction name="actionCrear_Nuevo_Archivo_de_Texto"/>
     <addaction name="separator"/>
     <addaction name="actionEliminar_Archivo"/>
+    <addaction name="separator"/>
+    <addaction name="actionSalir"/>
    </widget>
    <widget class="QMenu" name="menuEdici_n">
+    <property name="font">
+     <font>
+      <family>Oswald</family>
+     </font>
+    </property>
     <property name="title">
      <string>Edición</string>
     </property>
+    <addaction name="actionCopiar"/>
+    <addaction name="actionPegar"/>
     <addaction name="actionRenombrar_Archivo"/>
    </widget>
    <addaction name="menuArchivo"/>
@@ -218,20 +265,95 @@
    <property name="text">
     <string>Crear Nuevo Folder</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
   </action>
   <action name="actionCrear_Nuevo_Archivo_de_Texto">
    <property name="text">
     <string>Crear Nuevo Archivo de Texto</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionEliminar_Archivo">
    <property name="text">
     <string>Eliminar Archivo</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
   </action>
   <action name="actionRenombrar_Archivo">
    <property name="text">
     <string>Renombrar Archivo</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionSalir">
+   <property name="text">
+    <string>Salir</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionCopiar">
+   <property name="text">
+    <string>Copiar</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPegar">
+   <property name="text">
+    <string>Pegar</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Oswald</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

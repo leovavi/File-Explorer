@@ -9,11 +9,13 @@ class FileSystem
 {
 public:
     FileSystem();
-    void agregarArchivo(Folder*, QString, int);
+    Archivo * agregarArchivo(Folder*, QString, int);
     Lista * listarArchivos(Folder*);
     Archivo * cargarArchivo(QString);
     void eliminarArchivo(QString);
     void copiar(Folder*, QString, Folder*);
+    Folder * copiarFolder(Folder* origen, QString nombre, QString ruta);
+    ArchivoTexto * copiarArchivo(ArchivoTexto * origen, QString nombre, QString ruta);
     int buscar(Folder*, QString, QString);
     Folder * getParent(Archivo * arch);
     Folder * getParent(Archivo * arch, Folder * subRaiz, int cont);
