@@ -304,6 +304,26 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event){
 void MainWindow::keyPressEvent(QKeyEvent *key){
     if(key->key() == Qt::Key_Control)
         keyPressed = true;
+    else if(key->key() == Qt::Key_Backspace)
+        on_btnBack_clicked();
+    else if(key->key() == Qt::Key_Return){
+        if(selected.size() > 0){
+            if(selected.at(0)->getTipo() == "Folder"){
+                actualFolder = (Folder*)(selected.at(0));
+                treeItem->setExpanded(true);
+                refreshTree(actualFolder->getRuta());
+                addPath();
+                refresh();
+                selected.clear();
+            }
+            else{
+                ArchivoTexto * archText = (ArchivoTexto*)(selected.at(0));
+                Input * inp = new Input(this, archText);
+                inp->exec();
+                delete inp;
+            }
+        }
+    }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *key){
