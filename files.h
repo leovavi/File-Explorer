@@ -11,7 +11,7 @@
 class Files : public QGraphicsItem
 {
 public:
-    Files(Archivo * arch, int posX, int posY, bool painted);
+    Files(Archivo * arch, int posX, int posY, bool selected);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -21,7 +21,10 @@ public:
     QRectF rect;
     Archivo * archivo;
     int posX, posY;
-    bool painted;
+    bool selected;
+
+private:
+    //void mousePressEvent(QGraphicsSceneMouseEvent * event);
 };
 
 #endif // FILES_H

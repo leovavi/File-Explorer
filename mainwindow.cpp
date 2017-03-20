@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     clipboard = NULL;
     current = 0;
     paths.push_back("raiz");
+    keyPressed = false;
 
     scene = new QGraphicsScene(parent);
     ui->graphicsView->setScene(scene);
@@ -45,12 +46,12 @@ void MainWindow::pintarFiles(){
     for(int i = 0; i<l->tamano(); i++){
         Archivo * temp = l->obtener(i);
 
-        bool paint = (temp == selected ? true : false);
+        bool select = (temp == selected ? true : false);
 
         posY = (posX>=460 ? posY + 140 : posY);
         posX = (posX>=460 ? 30 : posX + 130);
 
-        scene->addItem(new Files(temp, posX, posY, paint));
+        scene->addItem(new Files(temp, posX, posY, select));
 
     }
 
@@ -94,6 +95,9 @@ void MainWindow::refreshTree(QString ruta){
             treeItem = temp;
     }
     treeItem->setSelected(true);
+    if(treeItem != ui->treeWidget->topLevelItem(0))
+        treeItem->parent()->setExpanded(true);
+    ui->treeWidget->resizeColumnToContents(0);
 }
 
 
@@ -107,6 +111,7 @@ QTreeWidgetItem *MainWindow::getHijo(QString nombre){
 }
 
 void MainWindow::addPath(){
+    qDebug() << current;
     if(current < paths.size()-1 && paths.at(current+1) != actualFolder->getRuta()){
         for(int i = current; i<paths.size(); i++)
             paths.pop_back();
@@ -132,6 +137,7 @@ void MainWindow::on_btnFolder_clicked(){
         QTreeWidgetItem * newItem = new QTreeWidgetItem(QStringList() << selected->getNombre());
         newItem->setIcon(0, *icon);
         treeItem->addChild(newItem);
+        treeItem->setExpanded(true);
         ui->treeWidget->resizeColumnToContents(0);
         refresh();
     }
@@ -223,9 +229,7 @@ void MainWindow::on_btnBack_clicked(){
     if(ruta != "raiz"){
         current--;
         actualFolder = (Folder*)(fs->cargarArchivo(paths.at(current)));
-        treeItem->setSelected(false);
-        treeItem = treeItem->parent();
-        treeItem->setSelected(true);
+        refreshTree(actualFolder->getRuta());
         refresh();
     }
 }
@@ -245,10 +249,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
     click.setY(click.y()-98);
 
     QGraphicsItem * item = ui->graphicsView->itemAt(click);
+    if(keyPressed)
+        qDebug() << "CONTROL";
 
     if(item){
         Files * file = (Files*)item;
         selected = file->archivo;
+        file->setSelected(true);
         refresh();
     }
 }
@@ -278,8 +285,16 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event){
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *key){
+    if(key->key() == Qt::Key_Control)
+        keyPressed = true;
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *key){
+    keyPressed = false;
+}
+
 void MainWindow::on_treeWidget_clicked(const QModelIndex &index){
-    qDebug() << ui->treeWidget->currentItem()->text(0);
     if(ui->treeWidget->currentItem() != treeItem){
         treeItem = ui->treeWidget->currentItem();
         QString path = getPath(treeItem);

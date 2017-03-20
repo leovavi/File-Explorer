@@ -35,6 +35,8 @@ private slots:
     void on_actionRenombrar_Archivo_triggered();
     void mousePressEvent(QMouseEvent * event);
     void mouseDoubleClickEvent(QMouseEvent * event);
+    void keyPressEvent(QKeyEvent * key);
+    void keyReleaseEvent(QKeyEvent * key);
     void on_actionSalir_triggered();
     void on_actionCopiar_triggered();
     void on_actionPegar_triggered();
@@ -52,12 +54,13 @@ private:
     Archivo * selected, *clipboard;
     Folder * actualFolder;
     QVector<QString> paths;
+    bool keyPressed;
     int current;
 
     void pintarFiles();
     void refresh();
     void deleteFromTree();
-    void refreshTree(QString nombre);
+    void refreshTree(QString ruta);
     void addPath();
     QTreeWidgetItem * getHijo(QString nombre);
     QString getPath(QTreeWidgetItem * item);
