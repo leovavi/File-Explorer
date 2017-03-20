@@ -47,13 +47,14 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene * scene;
-    QTreeWidgetItem * treeItem, * copyTreeItem;
+    QTreeWidgetItem * treeItem;
     QIcon * icon;
     Files * selectedItem;
     FileSystem * fs;
-    Archivo * selected, *clipboard;
     Folder * actualFolder;
     QVector<QString> paths;
+    QVector<Archivo*> selected, clipboard;
+    QVector<QTreeWidgetItem*> copyTreeItem;
     bool keyPressed;
     int current;
 
@@ -62,6 +63,8 @@ private:
     void deleteFromTree();
     void refreshTree(QString ruta);
     void addPath();
+    void copy();
+    bool searchInSelected(QString nombre);
     QTreeWidgetItem * getHijo(QString nombre);
     QString getPath(QTreeWidgetItem * item);
 };

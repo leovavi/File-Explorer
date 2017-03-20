@@ -6,8 +6,6 @@ extern FileSystem * fs;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    selected = NULL;
-    clipboard = NULL;
     current = 0;
     paths.push_back("raiz");
     keyPressed = false;
@@ -46,7 +44,7 @@ void MainWindow::pintarFiles(){
     for(int i = 0; i<l->tamano(); i++){
         Archivo * temp = l->obtener(i);
 
-        bool select = (temp == selected ? true : false);
+        bool select = (selected.contains(temp) ? true : false);
 
         posY = (posX>=460 ? posY + 140 : posY);
         posX = (posX>=460 ? 30 : posX + 130);
@@ -70,7 +68,7 @@ void MainWindow::refresh()
 void MainWindow::deleteFromTree(){
     for(int i = 0; i<treeItem->childCount(); i++){
         QTreeWidgetItem * temp = treeItem->child(i);
-        if(temp->text(0) == selected->getNombre()){
+        if(searchInSelected(temp->text(0))){
             treeItem->removeChild(temp);
             return;
         }
@@ -78,14 +76,6 @@ void MainWindow::deleteFromTree(){
 }
 
 void MainWindow::refreshTree(QString ruta){
-//    treeItem->setSelected(false);
-//    treeItem = getHijo(nombre);
-//    treeItem->setSelected(true);
-
-//    if(treeItem != ui->treeWidget->topLevelItem(0))
-//        treeItem->parent()->setExpanded(true);
-
-//    ui->treeWidget->resizeColumnToContents(0);
     QStringList lista = ruta.split('/');
     treeItem->setSelected(false);
     treeItem = ui->treeWidget->topLevelItem(0);
@@ -111,7 +101,6 @@ QTreeWidgetItem *MainWindow::getHijo(QString nombre){
 }
 
 void MainWindow::addPath(){
-    qDebug() << current;
     if(current < paths.size()-1 && paths.at(current+1) != actualFolder->getRuta()){
         for(int i = current; i<paths.size(); i++)
             paths.pop_back();
@@ -119,6 +108,24 @@ void MainWindow::addPath(){
 
     paths.push_back(actualFolder->getRuta());
     current++;
+}
+
+void MainWindow::copy(){
+    clipboard.clear();
+    copyTreeItem.clear();
+    for(int i = 0; i<selected.size(); i++){
+        clipboard.push_back(selected.at(i));
+        if(selected.at(i)->getTipo() == "Folder")
+            copyTreeItem.push_back(getHijo(selected.at(i)->getNombre())->clone());
+    }
+}
+
+bool MainWindow::searchInSelected(QString nombre){
+    for(int i = 0; i<selected.size(); i++){
+        if(selected.at(i)->getNombre() == nombre)
+            return true;
+    }
+    return false;
 }
 
 QString MainWindow::getPath(QTreeWidgetItem * item){
@@ -133,8 +140,9 @@ void MainWindow::on_btnFolder_clicked(){
     QString text = QInputDialog::getText(this, tr("Nuevo Folder"), tr("Nombre:"), QLineEdit::Normal, "", &confirm);
 
     if(confirm && !(text.isEmpty())){
-        selected = fs->agregarArchivo(actualFolder, text, 2);
-        QTreeWidgetItem * newItem = new QTreeWidgetItem(QStringList() << selected->getNombre());
+        selected.clear();
+        selected.push_back(fs->agregarArchivo(actualFolder, text, 2));
+        QTreeWidgetItem * newItem = new QTreeWidgetItem(QStringList() << selected.at(0)->getNombre());
         newItem->setIcon(0, *icon);
         treeItem->addChild(newItem);
         treeItem->setExpanded(true);
@@ -150,27 +158,25 @@ void MainWindow::on_btnArchivo_clicked(){
     QString text = QInputDialog::getText(this, tr("Nuevo Archivo de Texto"), tr("Nombre:"), QLineEdit::Normal, "", &confirm);
 
     if(confirm && !(text.isEmpty())){
-        selected = fs->agregarArchivo(actualFolder, text, 1);
+        selected.clear();
+        selected.push_back(fs->agregarArchivo(actualFolder, text, 1));
         refresh();
     }
 }
 
 void MainWindow::on_btnCopy_clicked(){
-    if(selected){
-        clipboard = selected;
-        if(selected->getTipo() == "Folder")
-            copyTreeItem = getHijo(selected->getNombre())->clone();
-        else
-            copyTreeItem = NULL;
-    }
+    if(selected.size() > 0)
+        copy();
 }
 
 void MainWindow::on_btnPaste_clicked(){
-    if(clipboard){
-        Folder * origen = fs->getParent(clipboard);
-        fs->copiar(origen, clipboard->getNombre(), actualFolder);
-        if(copyTreeItem){
-            treeItem->addChild(copyTreeItem);
+    if(clipboard.size() > 0){
+        for(int i = 0; i<clipboard.size(); i++){
+            Folder * origen = fs->getParent(clipboard.at(0));
+            fs->copiar(origen, clipboard.at(i)->getNombre(), actualFolder);
+        }
+        for(int i = 0; i<copyTreeItem.size(); i++){
+            treeItem->addChild(copyTreeItem.at(i));
         }
         refresh();
     }else{
@@ -179,16 +185,22 @@ void MainWindow::on_btnPaste_clicked(){
 }
 
 void MainWindow::on_actionEliminar_Archivo_triggered(){
-    if(selected != NULL){
+    if(selected.size()>0){
         QMessageBox::StandardButton resp;
         resp = QMessageBox::question(this, tr("Eliminar Archivo"), tr("¿Desea eliminar?"),
                                      QMessageBox::Yes | QMessageBox::No);
         if(resp == QMessageBox::Yes){
-            fs->eliminarArchivo(selected->getRuta());
-            if(clipboard == selected)
-                clipboard = NULL;
-            deleteFromTree();
-            selected = NULL;
+            for(int i = 0; i<selected.size(); i++){
+                int index = paths.indexOf(selected.at(i)->getRuta());
+                if(index != -1)
+                    paths.remove(index);
+
+                fs->eliminarArchivo(selected.at(i)->getRuta());
+                deleteFromTree();
+            }
+            selected.clear();
+            clipboard.clear();
+            copyTreeItem.clear();
             refresh();
         }
     }else
@@ -207,16 +219,16 @@ void MainWindow::renombrarArchivos(Folder *f){
 }
 
 void MainWindow::on_actionRenombrar_Archivo_triggered(){
-    if(selected != NULL){
+    if(selected.size() > 0){
         bool confirm = false;
         QString text = QInputDialog::getText(this, tr("Renombrar Archivo"), tr("Nuevo Nombre:"), QLineEdit::Normal,
-                                             selected->getNombre(), &confirm);
+                                             selected.at(0)->getNombre(), &confirm);
         if(confirm && !(text.isEmpty())){
-            QTreeWidgetItem * temp = getHijo(selected->getNombre());
-            selected->setNombre(text);
-            selected->setRuta(actualFolder->getRuta()+"/"+selected->getNombre());
-            if(selected->getTipo() == "Folder"){
-                renombrarArchivos((Folder*)selected);
+            QTreeWidgetItem * temp = getHijo(selected.at(0)->getNombre());
+            selected.at(0)->setNombre(text);
+            selected.at(0)->setRuta(actualFolder->getRuta()+"/"+selected.at(0)->getNombre());
+            if(selected.at(0)->getTipo() == "Folder"){
+                renombrarArchivos((Folder*)selected.at(0));
                 temp->setText(0, text);
             }
         }
@@ -225,8 +237,9 @@ void MainWindow::on_actionRenombrar_Archivo_triggered(){
 
 void MainWindow::on_btnBack_clicked(){
     QString ruta = actualFolder->getRuta();
+    qDebug() << current;
 
-    if(ruta != "raiz"){
+    if(current > 0){
         current--;
         actualFolder = (Folder*)(fs->cargarArchivo(paths.at(current)));
         refreshTree(actualFolder->getRuta());
@@ -235,6 +248,7 @@ void MainWindow::on_btnBack_clicked(){
 }
 
 void MainWindow::on_btnFront_clicked(){
+    qDebug() << current;
     if(current+1 <paths.size()){
         current++;
         actualFolder = (Folder*)(fs->cargarArchivo(paths.at(current)));
@@ -249,12 +263,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
     click.setY(click.y()-98);
 
     QGraphicsItem * item = ui->graphicsView->itemAt(click);
-    if(keyPressed)
-        qDebug() << "CONTROL";
 
     if(item){
         Files * file = (Files*)item;
-        selected = file->archivo;
+        if(!keyPressed)
+            selected.clear();
+        selected.push_back(file->archivo);
         file->setSelected(true);
         refresh();
     }
@@ -273,9 +287,9 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event){
         if(file->archivo->getTipo() == "Folder"){
             actualFolder = (Folder*)file->archivo;
             addPath();
-            refreshTree(selected->getRuta());
+            refreshTree(selected.at(0)->getRuta());
             refresh();
-            selected = NULL;
+            selected.clear();
         }else{
             ArchivoTexto * archText = (ArchivoTexto*)(file->archivo);
             Input * inp = new Input(this, archText);
