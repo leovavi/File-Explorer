@@ -13,7 +13,7 @@ public:
     Lista * listarArchivos(Folder*);
     Archivo * cargarArchivo(QString);
     void eliminarArchivo(QString);
-    void copiar(Folder*, QString, Folder*);
+    QString copiar(Folder*, QString, Folder*);
     Folder * copiarFolder(Folder* origen, QString nombre, QString ruta);
     ArchivoTexto * copiarArchivo(ArchivoTexto * origen, QString nombre, QString ruta);
     int buscar(Folder*, QString, QString);

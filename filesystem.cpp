@@ -64,7 +64,7 @@ void FileSystem::eliminarArchivo(QString ruta){
         actual->eliminarArchivo(temp);
 }
 
-void FileSystem::copiar(Folder * origen, QString nombre, Folder * destino){
+QString FileSystem::copiar(Folder * origen, QString nombre, Folder * destino){
     for(int i = 0; i<origen->getCantidadArchivos(); i++){
         temp = origen->obtenerArchivo(i);
 
@@ -86,6 +86,7 @@ void FileSystem::copiar(Folder * origen, QString nombre, Folder * destino){
             ArchivoTexto * text = copiarArchivo((ArchivoTexto*)temp, nombre, ruta);
             destino->agregarArchivo(text);
         }
+        return nombre;
     }
 }
 

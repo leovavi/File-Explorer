@@ -171,12 +171,18 @@ void MainWindow::on_btnCopy_clicked(){
 
 void MainWindow::on_btnPaste_clicked(){
     if(clipboard.size() > 0){
+        int cont = 0;
         for(int i = 0; i<clipboard.size(); i++){
             Folder * origen = fs->getParent(clipboard.at(0));
-            fs->copiar(origen, clipboard.at(i)->getNombre(), actualFolder);
-        }
-        for(int i = 0; i<copyTreeItem.size(); i++){
-            treeItem->addChild(copyTreeItem.at(i));
+            QString nombre = fs->copiar(origen, clipboard.at(i)->getNombre(), actualFolder);
+            if(cont < copyTreeItem.size()){
+                QTreeWidgetItem * item = copyTreeItem.at(cont)->clone();
+                if(getHijo(copyTreeItem.at(cont)->text(0)) != NULL)
+                    item->setText(0, nombre);
+                qDebug() << item->text(0);
+                treeItem->addChild(item);
+                cont++;
+            }
         }
         refresh();
     }else{
@@ -236,9 +242,6 @@ void MainWindow::on_actionRenombrar_Archivo_triggered(){
 }
 
 void MainWindow::on_btnBack_clicked(){
-    QString ruta = actualFolder->getRuta();
-    qDebug() << current;
-
     if(current > 0){
         current--;
         actualFolder = (Folder*)(fs->cargarArchivo(paths.at(current)));
@@ -248,7 +251,6 @@ void MainWindow::on_btnBack_clicked(){
 }
 
 void MainWindow::on_btnFront_clicked(){
-    qDebug() << current;
     if(current+1 <paths.size()){
         current++;
         actualFolder = (Folder*)(fs->cargarArchivo(paths.at(current)));
